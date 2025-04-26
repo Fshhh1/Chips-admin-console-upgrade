@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CHIPS:// Admin Console</title>
+  <style>
+    body { background-color: #000; color: #0f0; font-family: monospace; padding: 20px; }
+    .panel { border: 1px solid #0f0; padding: 20px; border-radius: 10px; }
+    h1 { color: #0ff; }
+    button { background-color: #0f0; color: #000; padding: 10px; border: none; margin-top: 10px; }
+    input { padding: 5px; width: 80%; }
+    #response { margin-top: 20px; color: #fff; }
+    canvas { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>CHIPS:// Admin Console</h1>
+    <p>Identity: <strong>Δ001.RED-MELON</strong></p>
+    <input type="text" id="command" placeholder="Enter command...">
+    <button onclick="sendCommand()">Send</button>
+    <div id="response"></div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script src="graph.js"></script>
+</body>
+</html>
