@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Decrypt Vault</title>
+</head>
+<body style="background-color: black; color: lime; font-family: monospace; padding: 20px;">
+  <h1>CHIPS:// Vault Decryption</h1>
+  <input type="file" id="fileInput"><br><br>
+  <input type="password" id="password" placeholder="Enter password"><br><br>
+  <button onclick="decryptVault()">Decrypt</button>
+  <pre id="output"></pre>
+
+  <script>
+    async function getKeyMaterial(password) {
+      let enc = new TextEncoder();
+      return crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveKey"]);
+    }
+
+    async function getKey(password) {
+      const keyMaterial = await getKeyMaterial(password);
+      return crypto.subtle.deriveKey({
+        name: "PBKDF2",
+        salt: new TextEncoder().encode("chips_vault_salt"),
+        iterations: 100000,
+        hash: "SHA-256",
+      }, keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+    }
+
+    async function decryptVault() {
+      const file = document.getElementById("fileInput").files[0];
+      const password = document.getElementById("password").value;
+      if (!file || !password) return alert("Select file and enter password.");
+
+      const reader = new FileReader();
+      reader.onload = async function (e) {
+        const raw = new Uint8Array(e.target.result);
+        const iv = raw.slice(0, 12);
+        const data = raw.slice(12);
+        const key = await getKey(password);
+        try {
+          const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, data);
+          const decoded = new TextDecoder().decode(decrypted);
+          document.getElementById("output").innerText = decoded;
+        } catch {
+          alert("Decryption failed.");
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  </script>
+</body>
+</html>
